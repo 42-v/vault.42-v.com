@@ -1,0 +1,10 @@
+# Files NOT served as static assets (repo config + docs + private source + worker)
+.assetsignore
+wrangler.jsonc
+worker.js
+.gitignore
+.app.src.js
+README.md
+LICENSE
+NOTICE
+*.map

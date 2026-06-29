@@ -1,0 +1,519 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>vault42 — Self-Hosted Identity Authority · Own Your Root of Trust</title>
+  <meta name="description" content="Self-hosted identity authority in one Go binary. Issues session JWTs signed RS256, publishes keys at JWKS — no external IdP, no cloud. Own your root of trust.">
+  <meta name="robots" content="index, follow">
+  <meta name="theme-color" content="#000000">
+  <style>html,body{background:#000}#gas{background:#000}</style>
+  <meta name="author" content="42-v">
+  <link rel="canonical" href="https://vault.42-v.com/">
+  <link rel="icon" href="./favicon.svg" type="image/svg+xml">
+  <link rel="icon" type="image/png" sizes="32x32" href="./favicon-32.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="./apple-touch-icon.png">
+  <link rel="manifest" href="./site.webmanifest">
+  <meta name="application-name" content="vault42">
+  <meta name="apple-mobile-web-app-title" content="vault42">
+
+  <!-- Open Graph -->
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="vault42">
+  <meta property="og:url" content="https://vault.42-v.com/">
+  <meta property="og:title" content="vault42 — Self-Hosted Identity Authority">
+  <meta property="og:description" content="One Go binary. RS256 / JWKS. No external IdP, no cloud. Own your root of trust.">
+  <meta property="og:image" content="https://vault.42-v.com/og.png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:image:alt" content="vault42 — own the root of trust">
+  <meta property="og:image:type" content="image/png">
+  <meta property="og:locale" content="en_US">
+
+  <!-- Twitter -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="vault42 — Self-Hosted Identity Authority">
+  <meta name="twitter:description" content="One Go binary. RS256 / JWKS. No external IdP, no cloud. Own your root of trust.">
+  <meta name="twitter:image" content="https://vault.42-v.com/og.png">
+  <meta name="twitter:image:alt" content="vault42 — own the root of trust">
+
+  <!-- structured data -->
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"SoftwareApplication","name":"vault42","applicationCategory":"SecurityApplication","operatingSystem":"Linux amd64, arm64","url":"https://vault.42-v.com/","description":"Self-hosted identity authority in a single Go binary. Issues session JWTs signed RS256 and publishes keys at a JWKS endpoint for any resource server to verify.","license":"https://opensource.org/licenses/MIT","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"},"author":{"@type":"Organization","name":"42-v","url":"https://42-v.com"}}
+  </script>
+  <link rel="stylesheet" href="./styles.css">
+  <script>
+    /* arm the entrance fade-in before first paint — motion users only,
+       so reduced-motion / no-JS visitors get content instantly. */
+    (function () {
+      try {
+        var mm = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)');
+        if (!mm || !mm.matches) document.documentElement.className += ' preload';
+      } catch (e) {}
+    })();
+  </script>
+  <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
+</head>
+<body class="v-bloom-bg">
+
+  <!-- atmosphere: modern CRT + grain -->
+  <div class="v-crt" aria-hidden="true"></div>
+  <div class="v-grain" aria-hidden="true"></div>
+  <div class="vignette" aria-hidden="true"></div>
+
+  <!-- signature interaction: phosphor reticle cursor -->
+  <div class="cursor-ring" id="cursor-ring" aria-hidden="true"></div>
+  <div class="cursor-dot" id="cursor-dot" aria-hidden="true"></div>
+
+  <a class="skip-link" href="#chain">Skip to content</a>
+
+  <!-- floating glass nav -->
+  <header class="nav" id="nav">
+    <div class="nav-inner">
+      <a href="#hero" class="brand" aria-label="vault42 home">
+        <span class="brand-mark" aria-hidden="true">[</span><span class="brand-name"><span style="color:#F4F2F0">vault</span><span style="color:#00FF42">42</span></span><span class="brand-mark" aria-hidden="true">]</span>
+      </a>
+      <nav class="nav-links" aria-label="primary">
+        <a href="#chain"><span class="nl-n">00</span> WHY</a>
+        <a href="#what"><span class="nl-n">01</span> ROOT</a>
+        <a href="#how"><span class="nl-n">02</span> FLOW</a>
+        <a href="#use"><span class="nl-n">03</span> USES</a>
+        <a href="#proof"><span class="nl-n">04</span> PROOF</a>
+        <a href="#audit"><span class="nl-n">05</span> LEDGER</a>
+        <a href="#deploy"><span class="nl-n">06</span> DEPLOY</a>
+      </nav>
+      <a href="https://github.com/42-v/vault42" target="_blank" rel="noopener" class="nav-cta">SOURCE &rsaquo;</a>
+    </div>
+  </header>
+
+  <main id="top">
+
+    <!-- ============ HERO ============ -->
+    <section class="hero" id="hero" aria-labelledby="hero-head">
+      <div class="hero-gas-static" aria-hidden="true"></div>
+      <canvas id="gas" class="hero-gas" aria-hidden="true" style="background:#000"></canvas>
+      <div class="hero-scrim" aria-hidden="true"></div>
+
+      <div class="container hero-grid">
+        <div class="hero-copy">
+          <p class="eyebrow">ROOT-OF-TRUST <span class="sep">//</span> <span id="ver">v0.8.0</span> <span class="sep">//</span> MIT <span class="blink" aria-hidden="true">_</span></p>
+
+          <h1 id="hero-head" class="hero-title" data-scramble="OWN THE ROOT OF TRUST.">OWN THE ROOT OF TRUST.</h1>
+
+          <p class="hero-sub">
+            A self-hosted identity authority in <strong>one Go binary</strong>. It issues every session token,
+            signs them <strong>RS256</strong>, and publishes keys at <strong>JWKS</strong> — so you own
+            <span class="swap" id="word-swap" aria-live="off"><span class="swap-word">your sessions</span></span>.
+          </p>
+
+          <div class="cta-row" role="group" aria-label="primary actions">
+            <a href="#deploy" class="btn btn-solid magnetic" data-mag style="background:#00FF42;border-color:#00FF42;color:#000;-webkit-text-fill-color:#000;">
+              <span style="color:#000;-webkit-text-fill-color:#000;">DEPLOY IT</span><span class="arrow" aria-hidden="true">&rsaquo;</span>
+            </a>
+            <button type="button" class="btn btn-ghost magnetic" id="contact-open" data-mag aria-haspopup="dialog" aria-controls="contact-modal">
+              <span>CONTACT US</span>
+            </button>
+          </div>
+
+          <ul class="trust-strip" aria-label="trust markers">
+            <li>MIT</li><li>Go</li><li>RS256</li><li>JWKS</li><li>FIDO2</li><li>runs on a Pi</li>
+          </ul>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ============ 00 · OWN vs RENT vs BUILD (centerpiece) ============ -->
+    <section class="act compare-act" id="chain" aria-labelledby="chain-head">
+      <div class="grid-bg faint" aria-hidden="true"></div>
+      <div class="container">
+        <p class="eyebrow"><span class="num">00</span> <span class="sep">/</span> THE TRADE-OFF</p>
+        <h2 id="chain-head" class="act-title" data-scramble="OWN IT. DON'T RENT IT.">OWN IT. DON'T RENT IT.</h2>
+        <p class="act-sub">Identity is your root of trust — the one thing you should never hand to someone else's cloud. Here is the same job done three ways.</p>
+
+        <div class="compare">
+          <!-- vault42 — the owned column -->
+          <article class="cmp cmp-own reveal" aria-labelledby="cmp-own-h">
+            <header class="cmp-top">
+              <span class="cmp-badge">YOU OWN IT</span>
+              <h3 class="cmp-name" id="cmp-own-h">vault42</h3>
+              <p class="cmp-lede">Self-hosted identity authority. One Go binary, your keys, your box.</p>
+            </header>
+            <ul class="cmp-list">
+              <li class="yes"><span class="g" aria-hidden="true">✓</span> You hold the root of trust</li>
+              <li class="yes"><span class="g" aria-hidden="true">✓</span> Identity data never leaves your infra</li>
+              <li class="yes"><span class="g" aria-hidden="true">✓</span> Runs fully offline &amp; air-gapped</li>
+              <li class="yes"><span class="g" aria-hidden="true">✓</span> Flat cost — no per-MAU billing</li>
+              <li class="yes"><span class="g" aria-hidden="true">✓</span> MIT licensed — zero lock-in</li>
+              <li class="mid"><span class="g" aria-hidden="true">~</span> You operate it — but it's one binary</li>
+            </ul>
+          </article>
+
+          <!-- Hosted IdP -->
+          <article class="cmp reveal" aria-labelledby="cmp-saas-h">
+            <header class="cmp-top">
+              <span class="cmp-badge muted">YOU RENT IT</span>
+              <h3 class="cmp-name" id="cmp-saas-h">Hosted IdP</h3>
+              <p class="cmp-lede">Auth0 · Okta · Cognito. Convenient — until the bill and the lock-in arrive.</p>
+            </header>
+            <ul class="cmp-list">
+              <li class="no"><span class="r" aria-hidden="true">✕</span> Vendor holds your root of trust</li>
+              <li class="no"><span class="r" aria-hidden="true">✕</span> Identity data lives in their cloud</li>
+              <li class="no"><span class="r" aria-hidden="true">✕</span> Needs their cloud to function</li>
+              <li class="no"><span class="r" aria-hidden="true">✕</span> Per-MAU + per-seat pricing</li>
+              <li class="no"><span class="r" aria-hidden="true">✕</span> Proprietary — migration is painful</li>
+              <li class="yes"><span class="g" aria-hidden="true">✓</span> They run it for you</li>
+            </ul>
+          </article>
+
+          <!-- Roll-your-own -->
+          <article class="cmp reveal" aria-labelledby="cmp-diy-h">
+            <header class="cmp-top">
+              <span class="cmp-badge muted">YOU BUILD IT</span>
+              <h3 class="cmp-name" id="cmp-diy-h">Roll-your-own JWT</h3>
+              <p class="cmp-lede">A signing library and good intentions. The crypto details are where it bites.</p>
+            </header>
+            <ul class="cmp-list">
+              <li class="yes"><span class="g" aria-hidden="true">✓</span> You own it and the data</li>
+              <li class="no"><span class="r" aria-hidden="true">✕</span> alg-confusion is easy to get wrong</li>
+              <li class="no"><span class="r" aria-hidden="true">✕</span> No JWKS, rotation or audit for free</li>
+              <li class="no"><span class="r" aria-hidden="true">✕</span> Refresh-replay defense is on you</li>
+              <li class="no"><span class="r" aria-hidden="true">✕</span> Ongoing maintenance burden</li>
+              <li class="mid"><span class="g" aria-hidden="true">~</span> As safe as your worst commit</li>
+            </ul>
+          </article>
+        </div>
+
+        <p class="compare-foot">
+          <span class="cf-mark" aria-hidden="true">└─</span> vault42 keeps DIY's ownership and a hosted IdP's hardening — <strong>without the cloud or the bill.</strong>
+        </p>
+      </div>
+    </section>
+
+    <!-- ============ 01 · WHAT IT IS ============ -->
+    <section class="act" id="what" aria-labelledby="what-head">
+      <div class="container">
+        <div class="cmd reveal"><span class="cmd-prompt">v@vault42:~$</span> <span class="cmd-text">vault42 inspect --root</span><span class="cmd-cursor" aria-hidden="true">▋</span></div>
+        <p class="eyebrow"><span class="num">01</span> <span class="sep">/</span> ROOT</p>
+        <h2 id="what-head" class="act-title" data-scramble="NO IdP. NO CLOUD. YOU RUN IT.">NO IdP. NO CLOUD. YOU RUN IT.</h2>
+
+        <div class="root-grid">
+          <div class="root-doc reveal">
+            <span class="rd-tab" aria-hidden="true">ROOT</span>
+            <p>vault42 is a self-hosted identity authority. A single Go binary issues every session JWT using
+              <strong>RS256</strong> under a strict algorithm whitelist, and publishes its public keys at a
+              <strong>JWKS</strong> endpoint so any resource server verifies locally.</p>
+            <p>No external IdP. No cloud. You run it. Stateless access tokens, stateful refresh with
+              replay-family revocation, PostgreSQL-backed with least-privilege roles. Embedded SPA or pure API.</p>
+            <ul class="ticks">
+              <li>One static binary — <code>CGO_ENABLED=0</code>, distroless, read-only fs.</li>
+              <li>RS256 / JWKS resource-server model — tokens verifiable by any service.</li>
+              <li>Full session lifecycle: register, login, refresh, logout, MFA.</li>
+            </ul>
+          </div>
+          <aside class="spec reveal" aria-label="quick spec">
+            <div class="spec-row"><span>MODEL</span><b>RS256 / JWKS</b></div>
+            <div class="spec-row"><span>DEPS</span><b>3 direct</b></div>
+            <div class="spec-row"><span>IDLE RAM</span><b class="cyan">~60–80 MB</b></div>
+            <div class="spec-row"><span>STORE</span><b>PostgreSQL</b></div>
+            <div class="spec-row"><span>LICENSE</span><b>MIT</b></div>
+            <div class="spec-row"><span>ARCH</span><b>amd64 · arm64</b></div>
+          </aside>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ 02 · HOW IT WORKS ============ -->
+    <section class="act how-act" id="how" aria-labelledby="how-head">
+      <div class="grid-bg faint" aria-hidden="true"></div>
+      <div class="container">
+        <div class="cmd reveal"><span class="cmd-prompt">v@vault42:~$</span> <span class="cmd-text">vault42 explain --flow</span><span class="cmd-cursor" aria-hidden="true">▋</span></div>
+        <p class="eyebrow"><span class="num">02</span> <span class="sep">/</span> FLOW</p>
+        <h2 id="how-head" class="act-title" data-scramble="THREE STEPS TO TRUST.">THREE STEPS TO TRUST.</h2>
+        <p class="act-sub">From cold start to a verified request — no IdP, no cloud round-trips, no shared secrets. The whole authority is the binary you run.</p>
+
+        <ol class="flow">
+          <li class="flow-step reveal">
+            <span class="flow-no" aria-hidden="true">01</span>
+            <div class="flow-body">
+              <h3 class="flow-k">DEPLOY THE BINARY</h3>
+              <p class="flow-v">Drop one static Go binary on your box. It generates an RSA-2048 keypair, runs migrations, and publishes its public keys at <code>/.well-known/jwks.json</code>.</p>
+              <pre class="flow-cmd"><code><span class="dim">$</span> ./vault42 serve <span class="cy">--embedded</span></code></pre>
+            </div>
+          </li>
+          <li class="flow-arrow" aria-hidden="true">▸</li>
+          <li class="flow-step reveal">
+            <span class="flow-no" aria-hidden="true">02</span>
+            <div class="flow-body">
+              <h3 class="flow-k cyan">ISSUE RS256 JWTs</h3>
+              <p class="flow-v">Users register, log in, and refresh. vault42 mints short-lived access tokens signed <code>RS256</code> under the active <code>kid</code> — stateless and tamper-evident.</p>
+              <pre class="flow-cmd"><code><span class="dim">POST</span> /auth/login <span class="ok">→ 200</span> <span class="cy">access·refresh</span></code></pre>
+            </div>
+          </li>
+          <li class="flow-arrow" aria-hidden="true">▸</li>
+          <li class="flow-step reveal">
+            <span class="flow-no" aria-hidden="true">03</span>
+            <div class="flow-body">
+              <h3 class="flow-k">SERVICES VERIFY VIA JWKS</h3>
+              <p class="flow-v">Every service fetches the keys once, caches them, and verifies signatures locally. Zero shared secrets, no call back to the issuer per request.</p>
+              <pre class="flow-cmd"><code><span class="dim">GET</span> /.well-known/jwks.json <span class="ok">→ ✓ verify</span></code></pre>
+            </div>
+          </li>
+        </ol>
+      </div>
+    </section>
+
+    <!-- ============ 03 · USE CASES ============ -->
+    <section class="act use-act" id="use" aria-labelledby="use-head">
+      <div class="container">
+        <div class="cmd reveal"><span class="cmd-prompt">v@vault42:~$</span> <span class="cmd-text">vault42 where --does-this-fit</span><span class="cmd-cursor" aria-hidden="true">▋</span></div>
+        <p class="eyebrow"><span class="num">03</span> <span class="sep">/</span> USE CASES</p>
+        <h2 id="use-head" class="act-title" data-scramble="SIX PLACES IT EARNS ITS KEEP.">SIX PLACES IT EARNS ITS KEEP.</h2>
+        <p class="act-sub">One binary, one root of trust — wherever you'd rather own identity than rent it.</p>
+
+        <div class="usecases">
+          <article class="uc reveal">
+            <header class="uc-top"><span class="uc-no" aria-hidden="true">U1</span><span class="uc-tag">IDP REPLACEMENT</span></header>
+            <h3 class="uc-k">Replace a hosted IdP</h3>
+            <p class="uc-v">Drop Auth0, Okta, or Cognito and own your root of trust outright — <strong>no per-MAU billing</strong>, no seat tiers, no vendor lock-in.</p>
+          </article>
+
+          <article class="uc reveal">
+            <header class="uc-top"><span class="uc-no" aria-hidden="true">U2</span><span class="uc-tag">MICROSERVICES</span></header>
+            <h3 class="uc-k">Verify everywhere, share nothing</h3>
+            <p class="uc-v">Every service verifies tokens via <strong>JWKS</strong> — <strong>zero shared secrets</strong>, RS256 only, and no auth service sitting in the request hot path.</p>
+          </article>
+
+          <article class="uc reveal">
+            <header class="uc-top"><span class="uc-no" aria-hidden="true">U3</span><span class="uc-tag">EMBEDDED · OEM</span></header>
+            <h3 class="uc-k">Ship self-hostable auth</h3>
+            <p class="uc-v">Bundle vault42 inside <strong>your</strong> product. Customers run it on-prem, behind their own firewall, on their own keys — auth that ships with the box.</p>
+          </article>
+
+          <article class="uc reveal">
+            <header class="uc-top"><span class="uc-no" aria-hidden="true">U4</span><span class="uc-tag">EDGE · IOT</span></header>
+            <h3 class="uc-k">Runs at the edge</h3>
+            <p class="uc-v">One <strong>~60–80&nbsp;MB</strong> Go binary on a Raspberry&nbsp;Pi (<strong>ARM64</strong>). No runtime, no sidecars, no cloud dependency to phone home to.</p>
+          </article>
+
+          <article class="uc reveal">
+            <header class="uc-top"><span class="uc-no" aria-hidden="true">U5</span><span class="uc-tag">HOMELAB · SSO</span></header>
+            <h3 class="uc-k">Internal-tools SSO</h3>
+            <p class="uc-v">Single sign-on for your homelab and internal tools, with <strong>refresh rotation</strong>, <strong>FIDO2 passkeys</strong>, and <strong>TOTP</strong> in the box.</p>
+          </article>
+
+          <article class="uc reveal">
+            <header class="uc-top"><span class="uc-no" aria-hidden="true">U6</span><span class="uc-tag">AIR-GAPPED</span></header>
+            <h3 class="uc-k">Air-gapped &amp; compliance</h3>
+            <p class="uc-v">No cloud, ever. <strong>DB-enforced append-only</strong> audit, least-privilege roles, and you hold every key. Sovereignty by construction.</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ 04 · PROOF POINTS ============ -->
+    <section class="act" id="proof" aria-labelledby="proof-head">
+      <div class="grid-bg faint" aria-hidden="true"></div>
+      <div class="container">
+        <div class="cmd reveal"><span class="cmd-prompt">v@vault42:~$</span> <span class="cmd-text">vault42 audit --capabilities</span><span class="cmd-cursor" aria-hidden="true">▋</span></div>
+        <p class="eyebrow"><span class="num">04</span> <span class="sep">/</span> PROOF</p>
+        <h2 id="proof-head" class="act-title" data-scramble="SPECIFICS, NOT ADJECTIVES.">SPECIFICS, NOT ADJECTIVES.</h2>
+
+        <div class="proofs">
+          <div class="proof reveal"><span class="plus" aria-hidden="true">+</span>
+            <div class="k">RS256 ONLY</div>
+            <div class="v">Algorithm whitelist rejects <code>none</code>, HS256, ES*, and all others at parse time. Drops <code>jku</code>, <code>jwk</code>, <code>x5u</code> headers. 2048-bit RSA. 8&nbsp;KB size cap.</div>
+          </div>
+          <div class="proof reveal"><span class="plus" aria-hidden="true">+</span>
+            <div class="k cyan">JWKS ENDPOINT</div>
+            <div class="v"><code>GET /.well-known/jwks.json</code>. Any resource server fetches public keys. Zero-downtime rotation. Retired keys kept for the validation window.</div>
+          </div>
+          <div class="proof reveal"><span class="plus" aria-hidden="true">+</span>
+            <div class="k">FIDO2 / WEBAUTHN</div>
+            <div class="v">Passkey registration and authentication. Security keys + platform authenticators. Works alongside TOTP + backup codes.</div>
+          </div>
+          <div class="proof reveal"><span class="plus" aria-hidden="true">+</span>
+            <div class="k">APPEND-ONLY AUDIT</div>
+            <div class="v">DB-level enforcement. PostgreSQL triggers block <code>UPDATE</code>/<code>DELETE</code> on <code>audit_log</code>. <code>vault_app</code> role restricted to INSERT + SELECT only.</div>
+          </div>
+          <div class="proof reveal"><span class="plus" aria-hidden="true">+</span>
+            <div class="k">REFRESH ROTATION</div>
+            <div class="v">Single-use refresh tokens. Family tracking. Replay of a used token nukes the entire family. Device-fingerprint bound.</div>
+          </div>
+          <div class="proof reveal"><span class="plus" aria-hidden="true">+</span>
+            <div class="k">MINIMAL + HAND-ROLLED</div>
+            <div class="v">Exactly three direct dependencies. JWT, TOTP, JWKS, fingerprint, constant-time, AES-GCM — stdlib or small internal packages.</div>
+          </div>
+          <div class="proof reveal"><span class="plus" aria-hidden="true">+</span>
+            <div class="k cyan">RUNS ON A PI</div>
+            <div class="v">Embedded profile: ~60–80&nbsp;MB idle RAM, in-memory cache, 5 DB conns, auto-migrate. ARM64 build supported.</div>
+          </div>
+          <div class="proof reveal"><span class="plus" aria-hidden="true">+</span>
+            <div class="k">ARGON2ID + FINGERPRINT</div>
+            <div class="v">46&nbsp;MiB / 1 iter, NIST SP 800-63B. HIBP k-anonymity check. Every token carries a device-fingerprint hash.</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ 03 · AUDIT LEDGER ============ -->
+    <section class="act" id="audit" aria-labelledby="audit-head">
+      <div class="container">
+        <div class="cmd reveal"><span class="cmd-prompt">v@vault42:~$</span> <span class="cmd-text">vault42 audit --tail --verify</span><span class="cmd-cursor" aria-hidden="true">▋</span></div>
+        <p class="eyebrow"><span class="num">05</span> <span class="sep">/</span> LEDGER</p>
+        <h2 id="audit-head" class="act-title" data-scramble="APPEND-ONLY. HASH-CHAINED. SEALED.">APPEND-ONLY. HASH-CHAINED. SEALED.</h2>
+        <p class="act-sub">Every entry references its predecessor; the final root is the chain seal. Mirrors the production
+          log — DB triggers + role enforcement prevent mutation. Tampering breaks the chain.</p>
+
+        <div class="ledger-window reveal">
+          <div class="lw-bar">
+            <span class="lw-title">audit_log — append-only · hash-chained</span>
+            <span class="lw-live"><span class="live-dot" aria-hidden="true"></span> SEALED</span>
+          </div>
+          <div class="ledger" id="audit-ledger" role="table" aria-label="append-only hash-chained audit ledger">
+            <div class="ledger-head" role="row">
+              <div role="columnheader">TIMESTAMP</div>
+              <div role="columnheader">EVENT</div>
+              <div role="columnheader">IP</div>
+              <div role="columnheader">PREV</div>
+              <div role="columnheader">HASH</div>
+            </div>
+          </div>
+          <div class="root" id="audit-root" aria-live="polite">ROOT: —</div>
+        </div>
+
+        <div class="ledger-actions">
+          <button class="btn btn-ghost magnetic" id="audit-append" type="button" data-mag><span>APPEND EVENT</span><span class="arrow" aria-hidden="true">&rsaquo;</span></button>
+          <button class="btn btn-ghost magnetic" id="audit-reset" type="button" data-mag><span>RESET CHAIN</span></button>
+          <span class="small">Client-side simulation using real SHA-256. Production log is immutable at the database.</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ 04 · SELF-HOST QUICKSTART ============ -->
+    <section class="act" id="deploy" aria-labelledby="deploy-head">
+      <div class="grid-bg faint" aria-hidden="true"></div>
+      <div class="container">
+        <div class="cmd reveal"><span class="cmd-prompt">v@vault42:~$</span> <span class="cmd-text">vault42 deploy</span><span class="cmd-cursor" aria-hidden="true">▋</span></div>
+        <p class="eyebrow"><span class="num">06</span> <span class="sep">/</span> DEPLOY</p>
+        <h2 id="deploy-head" class="act-title" data-scramble="SHIP IT IN ONE COMMAND.">SHIP IT IN ONE COMMAND.</h2>
+
+        <div class="term deploy-term reveal">
+          <div class="term-bar">
+            <div class="dtabs" role="tablist" aria-label="deploy variants">
+              <button class="dtab is-active" role="tab" aria-selected="true" id="tab-binary" data-target="binary" type="button">BINARY</button>
+              <button class="dtab" role="tab" aria-selected="false" id="tab-helm" data-target="helm" type="button">HELM</button>
+            </div>
+            <button class="copy-btn magnetic" data-copy-target="code-binary" type="button" aria-label="copy commands" data-mag>COPY</button>
+          </div>
+
+          <div id="panel-binary" class="term-body code">
+<pre id="code-binary"><code><span class="c-com"># single static binary</span>
+CGO_ENABLED=0 go build -ldflags=<span class="c-str">"-s -w"</span> -o vault42 ./cmd/vault42
+
+<span class="c-com"># ARM64 (Raspberry Pi 5)</span>
+CGO_ENABLED=0 GOARCH=arm64 go build -ldflags=<span class="c-str">"-s -w"</span> -o vault42 ./cmd/vault42</code></pre>
+          </div>
+
+          <div id="panel-helm" class="term-body code" hidden>
+<pre id="code-helm"><code>microk8s helm3 upgrade --install vault42 charts/vault42 \
+  -n vault42 \
+  -f charts/vault42/values-embedded.yaml \
+  --set image.tag=v0.8.0 \
+  --set origin=https://vault.example.com \
+  --set secrets.existingSecret=vault42-secrets</code></pre>
+          </div>
+        </div>
+        <p class="small deploy-note">See <code>deployment-guide.md</code> for full MicroK8s + production paths. Secrets via <code>_FILE</code> or Kubernetes secrets. Always review before production use.</p>
+      </div>
+    </section>
+  </main>
+
+  <!-- ============ FOOTER ============ -->
+  <footer class="footer" id="footer">
+    <div class="grid-bg faint" aria-hidden="true"></div>
+    <div class="container footer-inner">
+      <div class="foot-brand">
+        <span class="brand-name big"><span style="color:#F4F2F0">vault</span><span style="color:#00FF42">42</span></span>
+        <p class="foot-tag">One binary. RS256. JWKS. <span class="accent">Your root of trust.</span></p>
+      </div>
+      <div class="foot-cols">
+        <div class="foot-col">
+          <span class="fc-h">PROJECT</span>
+          <a href="https://github.com/42-v/vault42" target="_blank" rel="noopener">READ SOURCE &rsaquo;</a>
+          <a href="https://github.com/42-v/vault42/tree/main/docs" target="_blank" rel="noopener">DOCS &rsaquo;</a>
+          <a href="#deploy">DEPLOY &rsaquo;</a>
+          <a href="https://42-v.com" target="_blank" rel="noopener">42-V.COM &rsaquo;</a>
+        </div>
+        <div class="foot-col">
+          <span class="fc-h">META</span>
+          <span class="fc-line">vault42 <b class="accent">v0.8.0</b></span>
+          <span class="fc-line">MIT LICENSE</span>
+          <span class="fc-line">RS256 · JWKS · FIDO2</span>
+        </div>
+      </div>
+    </div>
+    <div class="container foot-rule">
+      <span>&copy; 42-v <span aria-hidden="true">·</span> built for engineers who trust no one</span>
+      <span class="foot-status"><span class="live-dot" aria-hidden="true"></span> SYSTEM NOMINAL</span>
+    </div>
+  </footer>
+
+  <!-- ============ CONTACT MODAL ============ -->
+  <div class="modal" id="contact-modal" hidden>
+    <div class="modal-backdrop" data-close aria-hidden="true"></div>
+    <div class="modal-panel term" role="dialog" aria-modal="true" aria-labelledby="contact-title" aria-describedby="contact-desc">
+      <div class="term-bar modal-bar">
+        <span class="term-title">vault42 — secure channel</span>
+        <button type="button" class="modal-x" id="contact-close" aria-label="Close contact form">&times;</button>
+      </div>
+      <form class="modal-body" id="contact-form" novalidate>
+        <p class="eyebrow modal-eyebrow"><span class="num">//</span> <span class="sep">/</span> CONTACT</p>
+        <h2 id="contact-title" class="modal-title">CONTACT US</h2>
+        <p id="contact-desc" class="modal-desc">Questions, briefings, on-prem licensing — we’ll get back to you.</p>
+
+        <label class="field">
+          <span class="field-l">NAME</span>
+          <input class="field-i" type="text" id="c-name" name="name" required maxlength="120" autocomplete="name" spellcheck="false">
+        </label>
+        <label class="field">
+          <span class="field-l">EMAIL</span>
+          <input class="field-i" type="email" id="c-email" name="email" required maxlength="160" autocomplete="email" spellcheck="false">
+        </label>
+        <label class="field">
+          <span class="field-l">MESSAGE</span>
+          <textarea class="field-i" id="c-message" name="message" required maxlength="4000" rows="4"></textarea>
+        </label>
+
+        <!-- honeypot: visually hidden + off-screen; real users never fill it -->
+        <div class="hp" aria-hidden="true">
+          <label>Company (leave empty)
+            <input type="text" id="c-company" name="company" tabindex="-1" autocomplete="off">
+          </label>
+        </div>
+
+        <div class="cf-turnstile" data-sitekey="0x4AAAAAADtmGBIIQW-QxR4X" data-theme="dark" style="margin:4px 0 16px"></div>
+        <div class="modal-actions">
+          <button type="submit" class="btn btn-solid magnetic" id="contact-send" data-mag>
+            <span class="cs-label">SEND</span><span class="arrow" aria-hidden="true">&rsaquo;</span>
+          </button>
+          <button type="button" class="btn btn-ghost" id="contact-cancel">CANCEL</button>
+        </div>
+        <p class="form-status" id="contact-status" role="status" aria-live="polite"></p>
+      </form>
+      <div class="modal-sent" aria-hidden="true">
+        <svg class="sent-mark" viewBox="0 0 52 52" width="60" height="60" aria-hidden="true">
+          <circle cx="26" cy="26" r="24" fill="none" stroke="var(--accent)" stroke-width="2.5"/>
+          <path class="sent-check" d="M16 26.5 l6.5 6.5 L37 18" fill="none" stroke="var(--accent)" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        <h2 class="sent-title">MESSAGE SENT</h2>
+        <p class="sent-desc">Transmission received. We’ll get back to you.</p>
+        <button type="button" class="btn btn-ghost magnetic" id="contact-done" data-mag>DONE</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="leave-veil" aria-hidden="true"></div>
+  <script src="./app.js"></script>
+</body>
+</html>

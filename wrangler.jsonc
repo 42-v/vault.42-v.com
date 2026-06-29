@@ -1,0 +1,19 @@
+{
+  // vault42 landing — Workers Static Assets + an inline /contact email handler.
+  // CF Workers Builds runs `npx wrangler deploy` on push to main.
+  "name": "vault42",
+  "main": "worker.js",
+  "compatibility_date": "2026-06-01",
+  "assets": {
+    "directory": ".",
+    "binding": "ASSETS"
+  },
+  // All addresses/keys are SECRETS (never in the repo). Set them in the dashboard
+  // (Worker → Settings → Variables and Secrets) or with `wrangler secret put`:
+  //   FROM_ADDR         — the From address, e.g. vault.contact@42-v.com
+  //   TO_ADDR           — your inbox (a verified Email Routing destination)
+  //   TURNSTILE_SECRET  — the Cloudflare Turnstile secret key
+  "send_email": [
+    { "name": "CONTACT_MAILER" }
+  ]
+}
