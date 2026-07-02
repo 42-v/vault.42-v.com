@@ -83,8 +83,27 @@
         <a href="#deploy"><span class="nl-n">06</span> DEPLOY</a>
       </nav>
       <a href="https://github.com/42-v/vault42" target="_blank" rel="noopener" class="nav-cta">SOURCE &rsaquo;</a>
+      <button type="button" class="nav-burger" id="nav-burger" aria-label="Open navigation" aria-expanded="false" aria-controls="mobile-nav">[&#8801;]</button>
     </div>
   </header>
+
+  <!-- mobile nav overlay — full black, instant on/off -->
+  <div class="mobile-nav" id="mobile-nav" hidden>
+    <div class="mn-bar">
+      <span class="brand-name"><span style="color:#F4F2F0">vault</span><span style="color:#00FF42">42</span></span>
+      <button type="button" class="mn-close" id="mn-close" aria-label="Close navigation">[&times;]</button>
+    </div>
+    <nav class="mn-links" aria-label="primary mobile">
+      <a href="#chain"><span class="mn-n">00</span> WHY</a>
+      <a href="#what"><span class="mn-n">01</span> ROOT</a>
+      <a href="#how"><span class="mn-n">02</span> FLOW</a>
+      <a href="#use"><span class="mn-n">03</span> USES</a>
+      <a href="#proof"><span class="mn-n">04</span> PROOF</a>
+      <a href="#audit"><span class="mn-n">05</span> LEDGER</a>
+      <a href="#deploy"><span class="mn-n">06</span> DEPLOY</a>
+      <a href="https://github.com/42-v/vault42" target="_blank" rel="noopener"><span class="mn-n">&rsaquo;&rsaquo;</span> SOURCE</a>
+    </nav>
+  </div>
 
   <main id="top">
 
@@ -107,8 +126,8 @@
           </p>
 
           <div class="cta-row" role="group" aria-label="primary actions">
-            <a href="#deploy" class="btn btn-solid magnetic" data-mag style="background:#00FF42;border-color:#00FF42;color:#000;-webkit-text-fill-color:#000;">
-              <span style="color:#000;-webkit-text-fill-color:#000;">DEPLOY IT</span><span class="arrow" aria-hidden="true">&rsaquo;</span>
+            <a href="#deploy" class="btn btn-solid magnetic" data-mag>
+              <span>DEPLOY IT</span><span class="arrow" aria-hidden="true">&rsaquo;</span>
             </a>
             <button type="button" class="btn btn-ghost magnetic" id="contact-open" data-mag aria-haspopup="dialog" aria-controls="contact-modal">
               <span>CONTACT US</span>
@@ -140,11 +159,11 @@
               <p class="cmp-lede">Self-hosted identity authority. One Go binary, your keys, your box.</p>
             </header>
             <ul class="cmp-list">
-              <li class="yes"><span class="g" aria-hidden="true">✓</span> You hold the root of trust</li>
-              <li class="yes"><span class="g" aria-hidden="true">✓</span> Identity data never leaves your infra</li>
-              <li class="yes"><span class="g" aria-hidden="true">✓</span> Runs fully offline &amp; air-gapped</li>
-              <li class="yes"><span class="g" aria-hidden="true">✓</span> Flat cost — no per-MAU billing</li>
-              <li class="yes"><span class="g" aria-hidden="true">✓</span> MIT licensed — zero lock-in</li>
+              <li class="yes"><span class="g" aria-hidden="true">+</span> You hold the root of trust</li>
+              <li class="yes"><span class="g" aria-hidden="true">+</span> Identity data never leaves your infra</li>
+              <li class="yes"><span class="g" aria-hidden="true">+</span> Runs fully offline &amp; air-gapped</li>
+              <li class="yes"><span class="g" aria-hidden="true">+</span> Flat cost — no per-MAU billing</li>
+              <li class="yes"><span class="g" aria-hidden="true">+</span> MIT licensed — zero lock-in</li>
               <li class="mid"><span class="g" aria-hidden="true">~</span> You operate it — but it's one binary</li>
             </ul>
           </article>
@@ -157,12 +176,12 @@
               <p class="cmp-lede">Auth0 · Okta · Cognito. Convenient — until the bill and the lock-in arrive.</p>
             </header>
             <ul class="cmp-list">
-              <li class="no"><span class="r" aria-hidden="true">✕</span> Vendor holds your root of trust</li>
-              <li class="no"><span class="r" aria-hidden="true">✕</span> Identity data lives in their cloud</li>
-              <li class="no"><span class="r" aria-hidden="true">✕</span> Needs their cloud to function</li>
-              <li class="no"><span class="r" aria-hidden="true">✕</span> Per-MAU + per-seat pricing</li>
-              <li class="no"><span class="r" aria-hidden="true">✕</span> Proprietary — migration is painful</li>
-              <li class="yes"><span class="g" aria-hidden="true">✓</span> They run it for you</li>
+              <li class="no"><span class="r" aria-hidden="true">-</span> Vendor holds your root of trust</li>
+              <li class="no"><span class="r" aria-hidden="true">-</span> Identity data lives in their cloud</li>
+              <li class="no"><span class="r" aria-hidden="true">-</span> Needs their cloud to function</li>
+              <li class="no"><span class="r" aria-hidden="true">-</span> Per-MAU + per-seat pricing</li>
+              <li class="no"><span class="r" aria-hidden="true">-</span> Proprietary — migration is painful</li>
+              <li class="yes"><span class="g" aria-hidden="true">+</span> They run it for you</li>
             </ul>
           </article>
 
@@ -174,11 +193,11 @@
               <p class="cmp-lede">A signing library and good intentions. The crypto details are where it bites.</p>
             </header>
             <ul class="cmp-list">
-              <li class="yes"><span class="g" aria-hidden="true">✓</span> You own it and the data</li>
-              <li class="no"><span class="r" aria-hidden="true">✕</span> alg-confusion is easy to get wrong</li>
-              <li class="no"><span class="r" aria-hidden="true">✕</span> No JWKS, rotation or audit for free</li>
-              <li class="no"><span class="r" aria-hidden="true">✕</span> Refresh-replay defense is on you</li>
-              <li class="no"><span class="r" aria-hidden="true">✕</span> Ongoing maintenance burden</li>
+              <li class="yes"><span class="g" aria-hidden="true">+</span> You own it and the data</li>
+              <li class="no"><span class="r" aria-hidden="true">-</span> alg-confusion is easy to get wrong</li>
+              <li class="no"><span class="r" aria-hidden="true">-</span> No JWKS, rotation or audit for free</li>
+              <li class="no"><span class="r" aria-hidden="true">-</span> Refresh-replay defense is on you</li>
+              <li class="no"><span class="r" aria-hidden="true">-</span> Ongoing maintenance burden</li>
               <li class="mid"><span class="g" aria-hidden="true">~</span> As safe as your worst commit</li>
             </ul>
           </article>
@@ -319,44 +338,52 @@
         <p class="eyebrow"><span class="num">04</span> <span class="sep">/</span> PROOF</p>
         <h2 id="proof-head" class="act-title" data-scramble="SPECIFICS, NOT ADJECTIVES.">SPECIFICS, NOT ADJECTIVES.</h2>
 
-        <div class="proofs">
-          <div class="proof reveal"><span class="plus" aria-hidden="true">+</span>
-            <div class="k">RS256 ONLY</div>
-            <div class="v">Algorithm whitelist rejects <code>none</code>, HS256, ES*, and all others at parse time. Drops <code>jku</code>, <code>jwk</code>, <code>x5u</code> headers. 2048-bit RSA. 8&nbsp;KB size cap.</div>
+        <div class="term proof-term reveal">
+          <div class="term-bar">
+            <span class="term-title">vault42 audit — capabilities</span>
+            <span class="lw-live"><span class="live-dot" aria-hidden="true"></span> 8/8 OK</span>
           </div>
-          <div class="proof reveal"><span class="plus" aria-hidden="true">+</span>
-            <div class="k cyan">JWKS ENDPOINT</div>
-            <div class="v"><code>GET /.well-known/jwks.json</code>. Any resource server fetches public keys. Zero-downtime rotation. Retired keys kept for the validation window.</div>
-          </div>
-          <div class="proof reveal"><span class="plus" aria-hidden="true">+</span>
-            <div class="k">FIDO2 / WEBAUTHN</div>
-            <div class="v">Passkey registration and authentication. Security keys + platform authenticators. Works alongside TOTP + backup codes.</div>
-          </div>
-          <div class="proof reveal"><span class="plus" aria-hidden="true">+</span>
-            <div class="k">APPEND-ONLY AUDIT</div>
-            <div class="v">DB-level enforcement. PostgreSQL triggers block <code>UPDATE</code>/<code>DELETE</code> on <code>audit_log</code>. <code>vault_app</code> role restricted to INSERT + SELECT only.</div>
-          </div>
-          <div class="proof reveal"><span class="plus" aria-hidden="true">+</span>
-            <div class="k">REFRESH ROTATION</div>
-            <div class="v">Single-use refresh tokens. Family tracking. Replay of a used token nukes the entire family. Device-fingerprint bound.</div>
-          </div>
-          <div class="proof reveal"><span class="plus" aria-hidden="true">+</span>
-            <div class="k">MINIMAL + HAND-ROLLED</div>
-            <div class="v">Exactly three direct dependencies. JWT, TOTP, JWKS, fingerprint, constant-time, AES-GCM — stdlib or small internal packages.</div>
-          </div>
-          <div class="proof reveal"><span class="plus" aria-hidden="true">+</span>
-            <div class="k cyan">RUNS ON A PI</div>
-            <div class="v">Embedded profile: ~60–80&nbsp;MB idle RAM, in-memory cache, 5 DB conns, auto-migrate. ARM64 build supported.</div>
-          </div>
-          <div class="proof reveal"><span class="plus" aria-hidden="true">+</span>
-            <div class="k">ARGON2ID + FINGERPRINT</div>
-            <div class="v">46&nbsp;MiB / 1 iter, NIST SP 800-63B. HIBP k-anonymity check. Every token carries a device-fingerprint hash.</div>
+          <div class="term-body proof-dump" role="list" aria-label="verified capabilities">
+            <div class="pline pecho" style="--i:0" aria-hidden="true"><span class="dim">$</span> vault42 audit --capabilities</div>
+            <div class="pline" style="--i:1" role="listitem">
+              <span class="pok" aria-hidden="true">[OK]</span><span class="pk">RS256 only</span>
+              <span class="pd">algorithm whitelist rejects <code>none</code>, HS256, ES* at parse time &middot; drops <code>jku</code>/<code>jwk</code>/<code>x5u</code> headers &middot; 2048-bit RSA &middot; 8&nbsp;KB size cap</span>
+            </div>
+            <div class="pline" style="--i:2" role="listitem">
+              <span class="pok" aria-hidden="true">[OK]</span><span class="pk cyan">JWKS endpoint</span>
+              <span class="pd"><code>GET /.well-known/jwks.json</code> &middot; any resource server fetches public keys &middot; zero-downtime rotation, retired keys kept for the validation window</span>
+            </div>
+            <div class="pline" style="--i:3" role="listitem">
+              <span class="pok" aria-hidden="true">[OK]</span><span class="pk">FIDO2 / WebAuthn</span>
+              <span class="pd">passkey registration + authentication &middot; security keys and platform authenticators &middot; works alongside TOTP + backup codes</span>
+            </div>
+            <div class="pline" style="--i:4" role="listitem">
+              <span class="pok" aria-hidden="true">[OK]</span><span class="pk">append-only audit</span>
+              <span class="pd">DB-level enforcement &middot; PostgreSQL triggers block <code>UPDATE</code>/<code>DELETE</code> on <code>audit_log</code> &middot; <code>vault_app</code> role: INSERT + SELECT only</span>
+            </div>
+            <div class="pline" style="--i:5" role="listitem">
+              <span class="pok" aria-hidden="true">[OK]</span><span class="pk">refresh rotation</span>
+              <span class="pd">single-use refresh tokens &middot; family tracking — replay of a used token nukes the entire family &middot; device-fingerprint bound</span>
+            </div>
+            <div class="pline" style="--i:6" role="listitem">
+              <span class="pok" aria-hidden="true">[OK]</span><span class="pk">minimal surface</span>
+              <span class="pd">exactly three direct dependencies &middot; JWT, TOTP, JWKS, fingerprint, constant-time, AES-GCM — stdlib or small internal packages</span>
+            </div>
+            <div class="pline" style="--i:7" role="listitem">
+              <span class="pok" aria-hidden="true">[OK]</span><span class="pk cyan">runs on a Pi</span>
+              <span class="pd">embedded profile: ~60&ndash;80&nbsp;MB idle RAM &middot; in-memory cache, 5 DB conns, auto-migrate &middot; ARM64 build supported</span>
+            </div>
+            <div class="pline" style="--i:8" role="listitem">
+              <span class="pok" aria-hidden="true">[OK]</span><span class="pk">argon2id + fingerprint</span>
+              <span class="pd">46&nbsp;MiB / 1 iter, NIST SP 800-63B &middot; HIBP k-anonymity check &middot; every token carries a device-fingerprint hash</span>
+            </div>
+            <div class="pline psum" style="--i:9"><span class="dim">&rsaquo;</span> 8/8 capabilities verified <span class="dim">&middot; 0 findings</span> <span class="term-cursor" aria-hidden="true">&#9611;</span></div>
           </div>
         </div>
       </div>
     </section>
 
-    <!-- ============ 03 · AUDIT LEDGER ============ -->
+    <!-- ============ 05 · AUDIT LEDGER ============ -->
     <section class="act" id="audit" aria-labelledby="audit-head">
       <div class="container">
         <div class="cmd reveal"><span class="cmd-prompt">v@vault42:~$</span> <span class="cmd-text">vault42 audit --tail --verify</span><span class="cmd-cursor" aria-hidden="true">▋</span></div>
@@ -390,7 +417,7 @@
       </div>
     </section>
 
-    <!-- ============ 04 · SELF-HOST QUICKSTART ============ -->
+    <!-- ============ 06 · SELF-HOST QUICKSTART ============ -->
     <section class="act" id="deploy" aria-labelledby="deploy-head">
       <div class="grid-bg faint" aria-hidden="true"></div>
       <div class="container">
